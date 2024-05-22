@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HighPoint</title>
+    <style>
+        body {
+            background-color: white;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        .section {
+            width: 100%;
+            height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 10px; /* Reduced margin to bring sections closer */
+        }
+        .container {
+            width: 1000px;
+            height: 600px;
+            position: relative;
+        }
+        .content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            z-index: 10;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        h1 {
+            font-weight: bold;
+            font-size: 64px; /* Increased font size */
+        }
+        .button-container {
+            display: flex;
+            align-items: center;
+        }
+        .button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        .button span {
+            margin-left: 10px;
+        }
+        .box {
+            position: absolute;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="section" data-color="red">
+        <div class="container">
+            <div class="content">
+                <h1>HighPoint Red</h1> <!-- Updated title -->
+                <div class="button-container">
+                    <p>Year of Completion: 2024</p>
+                    <button class="button">Apartments <span>&rarr;</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section" data-color="green">
+        <div class="container">
+            <div class="content">
+                <h1>HighPoint Green</h1> <!-- Updated title -->
+                <div class="button-container">
+                    <p>Year of Completion: 2024</p>
+                    <button class="button">Apartments <span>&rarr;</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section" data-color="blue">
+        <div class="container">
+            <div class="content">
+                <h1>HighPoint Blue</h1> <!-- Updated title -->
+                <div class="button-container">
+                    <p>Year of Completion: 2024</p>
+                    <button class="button">Apartments <span>&rarr;</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('.section');
+            const imageSources = {
+                red: ["red1.jpg", "red2.jpg", "red3.jpg", "red4.jpg"],
+                green: ["green1.jpg", "green2.jpg", "green3.jpg", "green4.jpg"],
+                blue: ["blue1.jpg", "blue2.jpg", "blue3.jpg", "blue4.jpg"]
+            };
+
+            sections.forEach(section => {
+                const container = section.querySelector('.container');
+                const color = section.getAttribute('data-color');
+                let lastPosition = { x: 0, y: 0 };
+                let boxes = [];
+
+                function createBox(x, y) {
+                    const box = document.createElement('img');
+                    box.className = 'box';
+                    const imageArray = imageSources[color];
+                    const randomImage = imageArray[Math.floor(Math.random() * imageArray.length)];
+                    box.src = randomImage;
+
+                    box.onload = function() {
+                        const width = box.naturalWidth;
+                        const height = box.naturalHeight;
+                        box.style.width = `${width}px`;
+                        box.style.height = `${height}px`;
+                        box.style.left = `${x - width / 2}px`;
+                        box.style.top = `${y - height / 2}px`;
+                        container.appendChild(box);
+                        boxes.push(box);
+                        if (boxes.length > 8) {
+                            container.removeChild(boxes.shift());
+                        }
+                    };
+                }
+
+                container.addEventListener('mousemove', function (event) {
+                    const rect = container.getBoundingClientRect();
+                    const mouseX = event.clientX - rect.left;
+                    const mouseY = event.clientY - rect.top;
+
+                    if (mouseX >= 0 && mouseX <= container.offsetWidth && mouseY >= 0 && mouseY <= container.offsetHeight) {
+                        const distance = Math.sqrt(Math.pow(mouseX - lastPosition.x, 2) + Math.pow(mouseY - lastPosition.y, 2));
+                        if (distance >= 100) { // Increase the distance to slow down the spawn rate
+                            lastPosition = { x: mouseX, y: mouseY };
+                            createBox(mouseX, mouseY);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
